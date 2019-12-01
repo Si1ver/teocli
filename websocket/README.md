@@ -1,1 +1,0 @@
-# Teonet L0 websocket HTML page client
