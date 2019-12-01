@@ -536,12 +536,10 @@ static ssize_t teoLNullPacketSplit(teoLNullConnectData *kld, void *data,
 
     // Check end of previous buffer
     if (kld->last_packet_offset > 0) {
-
         kld->read_buffer_offset =
             kld->read_buffer_offset - kld->last_packet_offset;
 
         if (kld->read_buffer_offset > 0) {
-
             CLTRACK(teocliOpt_DBG_packetFlow, "TeonetClient",
                     "L0 Client: Use %" PRId32
                     " bytes from previously received data...\n",
@@ -557,7 +555,6 @@ static ssize_t teoLNullPacketSplit(teoLNullConnectData *kld, void *data,
 
     // Increase buffer size
     if ((size_t)received > kld->read_buffer_size - kld->read_buffer_offset) {
-
         kld->read_buffer_size += data_len;
         if (kld->read_buffer != NULL) {
             kld->read_buffer = ccl_realloc(kld->read_buffer, kld->read_buffer_size);
@@ -588,7 +585,6 @@ static ssize_t teoLNullPacketSplit(teoLNullConnectData *kld, void *data,
         kld->read_buffer_offset >=
             (size_t)(len = teoLNullBufferSize(packet->peer_name_length,
                                               packet->data_length))) {
-
         if (teoLNullPacketChecksumCheck(packet)) {
             // Packet has received - return packet size
             retval = len;
@@ -767,7 +763,6 @@ size_t teoLNullPacketCreateLogin(teoLNullEncryptionContext *ctx, void *buffer,
  * @return Length of send data or -1 at error
  */
 ssize_t teoLNullLogin(teoLNullConnectData *con, const char *host_name) {
-
     // \TODO: create crypto key here
 
     const size_t buf_len = teoLNullBufferSize(1, strlen(host_name) + 1);
@@ -805,7 +800,6 @@ ssize_t teoLNullLogin(teoLNullConnectData *con, const char *host_name) {
 uint8_t get_byte_checksum(const uint8_t *data, size_t data_length) {
     const uint8_t *position;
     uint8_t checksum = 0;
-
     for (size_t i = 0; i < data_length; ++i) {
         position = data + i;
         checksum += *position;
@@ -1085,7 +1079,6 @@ bool teoLNullReadEventLoop(teoLNullConnectData *con, int timeout) {
     } else { // There is a data in sd. We should send TCP-data to event-loop,
              // UDP-data has been send in trudp-eventloop
         if (con->tcp_f) {
-
             ssize_t rc;
             while ((rc = teoLNullRecv(con)) != -1) {
                 if (rc > 0) {
@@ -1530,7 +1523,6 @@ void teoLNullDisconnect(teoLNullConnectData *con) {
         if (con->client_crypt != NULL) { free(con->client_crypt); }
 
         if (!con->tcp_f) {
-
             trudpChannelDestroyAll(con->td);
             trudpDestroy(con->td);
         }
@@ -1598,7 +1590,6 @@ static void trudpEventCback(void *tcd_pointer, int event, void *data,
             tcd->channel_key, STRING_trudpEvent(event), (uint32_t)data_length);
 
     switch (event) {
-
     // CONNECTED event
     // @param data NULL
     // @param user_data NULL
@@ -1878,4 +1869,4 @@ const char *STRING_teoLNullEvents(teoLNullEvents v) {
     }
 
     return "INVALID teoLNullEvents";
-};
+}

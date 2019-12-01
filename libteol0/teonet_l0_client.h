@@ -40,7 +40,6 @@ extern int usleep(__useconds_t __useconds);
  * L0 System commands
  */
 enum CMD_L {
-
     CMD_L_INIT = 0,               ///< #0 Special command, key exchange or login
     CMD_L_ECHO = 65,              ///< #65 Echo command
     CMD_L_ECHO_ANSWER,            ///< #66 Answer to echo command
@@ -64,14 +63,12 @@ enum CMD_L {
  * L0 client events
  */
 typedef enum teoLNullEvents {
-
     EV_L_CONNECTED,    ///< After connected to L0 server
     EV_L_DISCONNECTED, ///< After disconnected from L0 server
     EV_L_RECEIVED,     ///< Data received
     EV_L_TICK,         ///< Send after every teoLNullReadEventLoop calls
     EV_L_IDLE ///< Send after teoLNullReadEventLoop calls if data was not
               ///< received during timeout
-
 } teoLNullEvents;
 
 typedef void (*teoLNullEventsCb)(void *kc, teoLNullEvents event, void *data,
@@ -81,7 +78,6 @@ typedef void (*teoLNullEventsCb)(void *kc, teoLNullEvents event, void *data,
  * L0 client connection status
  */
 typedef enum teoLNullConnectionStatus {
-
     CON_STATUS_CONNECTED = 1,
     CON_STATUS_NOT_CONNECTED = 0,
     CON_STATUS_SOCKET_ERROR = -1,
@@ -89,7 +85,6 @@ typedef enum teoLNullConnectionStatus {
     CON_STATUS_CONNECTION_ERROR = -3,
     CON_STATUS_PIPE_ERROR = -4,
     CON_STATUS_ENCRYPTION_ERROR = -5,
-
 } teoLNullConnectionStatus;
 
 typedef enum PROTOCOL { TRUDP = 0, TCP = 1 } PROTOCOL;
@@ -101,7 +96,6 @@ typedef struct teoLNullEncryptionContext teoLNullEncryptionContext;
  * L0 client connect data
  */
 typedef struct teoLNullConnectData {
-
     teonetSocket fd; ///< Socket descriptor
 
     teoLNullConnectionStatus status; ///< Connection status
@@ -126,7 +120,6 @@ typedef struct teoLNullConnectData {
 #if defined(_WIN32)
     HANDLE handles[2];
 #endif
-
 } teoLNullConnectData;
 
 #define ARP_TABLE_IP_SIZE 48 // INET6_ADDRSTRLEN = 46
@@ -135,7 +128,6 @@ typedef struct teoLNullConnectData {
  * KSNet ARP table data structure
  */
 typedef struct ksnet_arp_data {
-
     int16_t mode; ///< Peers mode: -1 - This host, -2 undefined host, 0 - peer ,
                   ///< 1 - r-host, 2 - TCP Proxy peer
     char addr[ARP_TABLE_IP_SIZE]; ///< Peer IP address
@@ -152,7 +144,6 @@ typedef struct ksnet_arp_data {
     double monitor_time; ///< Monitor ping time
 
     double connected_time; ///< Time when peer was connected to this peer
-
 } ksnet_arp_data;
 
 typedef struct ksnet_arp_data_ext {
@@ -173,11 +164,9 @@ typedef struct ksnet_arp_data_ext {
  * Host info data structure
  */
 typedef struct host_info_data {
-
     uint8_t ver[DIG_IN_TEO_VER]; ///< Version
     uint8_t string_ar_num;       ///< Number of elements in array length
     char string_ar[];            ///< String array structure: { name, type }
-
 } host_info_data;
 
 #pragma pack(push)
@@ -187,15 +176,11 @@ typedef struct host_info_data {
  * KSNet ARP table whole data array
  */
 typedef struct ksnet_arp_data_ar {
-
     uint32_t length;
     struct _arp_data {
-
         char name[ARP_TABLE_IP_SIZE];
         ksnet_arp_data data;
-
     } arp_data[];
-
 } ksnet_arp_data_ar;
 
 /**
@@ -203,7 +188,6 @@ typedef struct ksnet_arp_data_ar {
  *
  */
 typedef struct teoLNullCPacket {
-
     uint8_t cmd;              ///< Command
     uint8_t peer_name_length; ///< To peer name length (include leading zero)
     uint16_t data_length;     ///< Packet data length
@@ -213,7 +197,6 @@ typedef struct teoLNullCPacket {
     uint8_t header_checksum;  ///< Header checksum
     char
         peer_name[]; ///< To/From peer name (include leading zero) + packet data
-
 } teoLNullCPacket;
 
 /**
@@ -221,9 +204,7 @@ typedef struct teoLNullCPacket {
  *
  */
 typedef struct ksnLNullSStat {
-
     uint16_t visits;
-
 } ksnLNullSStat;
 
 /**
@@ -231,46 +212,36 @@ typedef struct ksnLNullSStat {
  *
  */
 typedef struct ksnLNullSVisitsData {
-
     uint16_t visits;
     char client[];
-
 } ksnLNullSVisitsData;
 
 /**
  * Clients list data structure
  */
 typedef struct teonet_client_data_ar {
-
     uint32_t length;
     struct _client_data {
-
         char name[128];
         // ksnLNullData data;
-
     } client_data[];
-
 } teonet_client_data_ar;
 
 /**
  * teoSScr class list or CMD_SUBSCRIBE_ANSWER data
  */
 typedef struct teoSScrData {
-
     uint16_t ev; ///< Event (used when send data to subscriber)
     uint8_t cmd; ///< Command ID (used when send data to subscriber)
     char data[]; ///< Remote peer name in list or data in CMD_SUBSCRIBE_ANSWER
-
 } teoSScrData;
 
 /**
  * Data for CMD_L0_INFO_ANSWER command
  */
 typedef struct l0_info_data {
-
     uint32_t l0_tcp_port;
     char l0_tcp_ip_remote[];
-
 } l0_info_data;
 
 // Reset compiler warnings to previous state.
