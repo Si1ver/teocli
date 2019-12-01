@@ -1,10 +1,4 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * File:   main.cpp
  * Author: Kirill Scherba <kirill@scherba.ru>
  *
@@ -25,113 +19,106 @@
 
 #include "libteol0/teocli.hpp"
 
-using namespace std;
-
-/*
- *
- */
 int main(int argc, char** argv) {
-
     // Welcome message
-    cout << "Teonet L0 client example ver " TL0CN_VERSION <<
-            " (C++ native client)\n\n";
+    std::cout << "Teonet L0 client example ver " TL0CN_VERSION <<
+            " (C++ native client)" << std::endl << std::endl;
 
     // Check application parameters
-    if(argc < 5) {
-
-        cout << "Usage: " <<
-               argv[0] << " <client_name> <server_address> <server_port> <peer_name> " <<
-               "[message]\n";
+    if (argc < 5) {
+        std::cout << "Usage: " <<
+               argv[0] << " <client_name> <server_address> <server_port> "
+               "<peer_name> " << "[message]" << std::endl;
 
         exit(EXIT_SUCCESS);
     }
 
     // Teonet L0 server parameters
-    const char *host_name = argv[1]; //"C3";
-    const char *TCP_SERVER = argv[2]; //"127.0.0.1"; //"10.12.35.53"; //
-    const int TCP_PORT = atoi(argv[3]); //9000;
-    const char *peer_name = argv[4]; //"teostream";
+    const char *host_name = argv[1];
+    const char *TCP_SERVER = argv[2];
+    const int TCP_PORT = atoi(argv[3]);
+    const char *peer_name = argv[4];
     const char *msg;
-    if(argc > 5) msg = argv[5];
-    else msg = "Hello";
+    if (argc > 5) {
+        msg = argv[5];
+    } else {
+        msg = "Hello";
+    }
 
     // Define receive packet size
     ssize_t rc;
 
     // Initialize and connect to teonet L0 server
     teo::Teocli *teo = new teo::Teocli(TCP_SERVER, TCP_PORT, TCP);
-    if(teo->connected() > 0) {
-
+    if (teo->connected() > 0) {
         // Send (1) Initialization packet to L0 server
         ssize_t snd = teo->loginHost(host_name);
-        if(snd == -1) perror(strerror(errno));
-        cout << "\nSend " << snd <<
-                " bytes packet to L0 server, Initialization packet\n";
+        if (snd == -1) {
+            perror(strerror(errno));
+        }
+
+        std::cout << "\nSend " << snd << " bytes packet to L0 server, "
+            "Initialization packet" << std::endl;
 
         // Get L0 Server answer (1.2)
-        if((rc = teo->recvTimeout(1000000)) == -1) {
-
+        if ((rc = teo->recvTimeout(1000000)) == -1) {
             printf("Can't get answer from L0 server during timeout\n");
-
-        }
-        // Show L0 answer and continue send and receive data
-        else {
-
+        } else {
+            // Show L0 answer and continue send and receive data
             // Process received data
-            if(rc > 0) {
-                cout << "Receive " << rc << " bytes: " <<
-                        teo->packet()->data_length << " bytes data from L0 server, " <<
-                        "from peer " << teo->packet()->peer_name << ", cmd = " <<
-                        (int)teo->packet()->cmd << ", data:" <<
-                        (char*)teo->packetData() << "\n";
+            if (rc > 0) {
+                std::cout << "Receive " << rc << " bytes: " <<
+                    teo->packet()->data_length << " bytes data from L0 server, " <<
+                    "from peer " << teo->packet()->peer_name << ", cmd = " <<
+                    (int)teo->packet()->cmd << ", data:" <<
+                    (char*)teo->packetData() << std::endl;
             }
 
             // Send (2) peer list request to peer, command CMD_L_PEERS
             snd = teo->send(CMD_L_PEERS, peer_name, NULL, 0);
-            cout << "Send " << snd << " bytes packet to L0 server to peer " <<
+            std::cout << "Send " << snd << " bytes packet to L0 server to peer " <<
                     peer_name << ", " <<
-                    "cmd = " << CMD_L_PEERS << " (CMD_L_PEERS)\n";
+                    "cmd = " << CMD_L_PEERS << " (CMD_L_PEERS)" << std::endl;
 
             // Send (2.5) clients list request to peer, command CMD_L_L0_CLIENTS
             snd = teo->send(CMD_L_L0_CLIENTS, peer_name, NULL, 0);
-            cout << "Send " << snd << " bytes packet to L0 server to peer " <<
+            std::cout << "Send " << snd << " bytes packet to L0 server to peer " <<
                     peer_name << ", " <<
-                    "cmd = " << CMD_L_L0_CLIENTS << " (CMD_L_L0_CLIENTS)\n";
+                    "cmd = " << CMD_L_L0_CLIENTS << " (CMD_L_L0_CLIENTS)" << std::endl;
 
-            // Show empty line
-            cout << "\n";
+            std::cout << std::endl;
 
             // Send (3) echo request to peer, command CMD_L_ECHO
             snd = teo->sendEcho(peer_name, msg);
-            if(snd == -1) perror(strerror(errno));
+            if (snd == -1) {
+                perror(strerror(errno));
+            }
             printf("Send %d bytes packet to L0 server to peer %s, "
                    "cmd = %d (CMD_L_ECHO), "
                    "data: %s\n",
                    (int)snd, peer_name, CMD_L_ECHO, msg);
 
-            // Show empty line
-            cout << "\n";
+            std::cout << std::endl;
 
             // Receive (1) answer from server, CMD_L_PEERS_ANSWER -----------------
-            while((rc = teo->recv()) == -1) teo->sleep(50);
+            while ((rc = teo->recv()) == -1) {
+                teo->sleep(50);
+            }
 
             // Process received data
-            if(rc > 0) {
-
-                cout << "Receive " << rc << " bytes: " <<
+            if (rc > 0) {
+                std::cout << "Receive " << rc << " bytes: " <<
                         teo->packet()->data_length << " bytes data from L0 server, " <<
                         "from peer " << teo->packet()->peer_name << ", cmd = " <<
-                        (int)teo->packet()->cmd << "\n";
+                        (int)teo->packet()->cmd << std::endl;
 
                 // Process CMD_L_PEERS_ANSWER
-                if(teo->packet()->cmd == CMD_L_PEERS_ANSWER && teo->packet()->data_length > 1) {
-
+                if (teo->packet()->cmd == CMD_L_PEERS_ANSWER && teo->packet()->data_length > 1) {
                     // Show peer list
                     const char *ln = "--------------------------------------------"
                                      "---------\n";
-                    cout << ln << "Peers (" << teo->packetArpData()->length << "): \n" << ln;
-                    for(int i = 0; i < (int)teo->packetArpData()->length; i++) {
-
+                    std::cout << ln << "Peers (" << teo->packetArpData()->length << "): \n" << ln;
+                    for (int i = 0; i < (int)teo->packetArpData()->length; i++) {
                         printf("%-12s(%2d)   %-15s   %d %8.3f ms\n",
                                 teo->packetArpData()->arp_data[i].name,
                                 (int)teo->packetArpData()->arp_data[i].data.mode,
@@ -139,48 +126,47 @@ int main(int argc, char** argv) {
                                 teo->packetArpData()->arp_data[i].data.port,
                                 teo->packetArpData()->arp_data[i].data.last_triptime);
                     }
-                    cout << ln;
+                    std::cout << ln;
                 }
             }
 
-            // Show empty line
-            cout << "\n";
+            std::cout << std::endl;
 
-            // Receive (1.5) answer from server, CMD_L_L0_CLIENTS_ANSWER ----------
-            while((rc = teo->recv()) == -1) teo->sleep(50);
+            // Receive (1.5) answer from server, CMD_L_L0_CLIENTS_ANSWER ------
+            while ((rc = teo->recv()) == -1) {
+                teo->sleep(50);
+            }
 
             // Process received data
-            if(rc > 0) {
-
-                cout << "Receive " << rc << " bytes: " <<
-                        teo->packet()->data_length << " bytes data from L0 server, " <<
+            if (rc > 0) {
+                std::cout << "Receive " << rc << " bytes: " <<
+                        teo->packet()->data_length <<
+                        " bytes data from L0 server, " <<
                         "from peer " << teo->packet()->peer_name << ", cmd = " <<
-                        (int)teo->packet()->cmd << "\n";
+                        (int)teo->packet()->cmd << std::endl;
 
                 // Process CMD_L_L0_CLIENTS_ANSWER
-                if(teo->packet()->cmd == CMD_L_L0_CLIENTS_ANSWER && teo->packet()->data_length > 1) {
-
+                if (teo->packet()->cmd == CMD_L_L0_CLIENTS_ANSWER && teo->packet()->data_length > 1) {
                     // Show clients list
                     const char *ln = "--------------------------------------------"
                                      "---------\n";
-                    cout << ln << "Clients (" << teo->packetClientData()->length << "): \n" << ln;
-                    for(int i = 0; i < (int)teo->packetClientData()->length; i++) {
-
+                    std::cout << ln << "Clients (" << teo->packetClientData()->length << "): \n" << ln;
+                    for (int i = 0; i < (int)teo->packetClientData()->length; i++) {
                         printf("%-12s\n", teo->packetClientData()->client_data[i].name);
                     }
-                    cout << ln;
+                    std::cout << ln;
                 }
             }
 
-            // Show empty line
-            cout << "\n";
+            std::cout << std::endl;
 
-            // Receive (2) answer from server -------------------------------------
-            while((rc = teo->recv()) == -1) teo->sleep(50);
+            // Receive (2) answer from server ---------------------------------
+            while ((rc = teo->recv()) == -1) {
+                teo->sleep(50);
+            }
 
             // Process received data
-            if(rc > 0) {
-
+            if (rc > 0) {
                 printf("Receive %d bytes: %d bytes data from L0 server, "
                         "from peer %s, cmd = %d, data: %s\n",
                         (int)rc, (int)teo->packet()->data_length,
@@ -188,21 +174,19 @@ int main(int argc, char** argv) {
                         (char*)teo->packetData());
 
                 // Process CMD_L_ECHO_ANSWER
-                if(teo->packet()->cmd == CMD_L_ECHO_ANSWER) {
-
+                if (teo->packet()->cmd == CMD_L_ECHO_ANSWER) {
                     // Show trip time
                     printf("Trip time: %d ms\n", teo->packetEchoAnswerTripTime());
                 }
             }
 
-            // Show empty line
-            cout << "\n";
+            std::cout << std::endl;
 
             // Check received ECHO
-            cout << "Test result: " <<
+            std::cout << "Test result: " <<
                     ((teo->packetData() != NULL &&
                       !strcmp(msg, (char*)teo->packetData())) ? "OK" : "ERROR") <<
-                    "\n";
+                    std::endl;
         }
     }
 
